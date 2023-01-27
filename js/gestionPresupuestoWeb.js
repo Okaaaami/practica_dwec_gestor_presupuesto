@@ -65,6 +65,13 @@ function mostrarGastoWeb(idElemento, gasto){
     ///////////////////////////////
     divGastoEtiquetas.addEventListener("click", hand3);
     ///////////////////////////////
+    let BotonborrarApi = document.createElement("button");
+    BotonborrarApi.className = "gasto-borrar";
+    BotonborrarApi.type = "button";
+    BotonborrarApi.innerHTML = "Borrar (API)";
+    ///////////////////////////////
+
+
     ///////////////////////////////
     let botonEditForm = document.createElement("button");
     botonEditForm.className = "gasto-editar-formulario";
@@ -335,6 +342,25 @@ function cargarGastosWeb(){
     }
     repintar();
 }
+
+function cargarGastosApi(){
+
+    this.handleEvent = async function cargarGastosApi(){
+        let usuario = document.getElementById("nombre_usuario").value;
+        let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`;
+        let response = await fetch(url);
+        
+        scriptsGestion.cargarGastos();
+
+
+        return response;
+    
+        repintar();
+}
+}
+
+let btnCargarGastosApi = document.getElementById("cargar-gastos-api");
+btnCargarGastosApi.onclick = cargarGastosApi;
 
 let btnGuardarGastos = document.getElementById("guardar-gastos");
 btnGuardarGastos.onclick = guardarGastosWeb;

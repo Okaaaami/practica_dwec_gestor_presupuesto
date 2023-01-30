@@ -343,19 +343,15 @@ function cargarGastosWeb(){
     repintar();
 }
 
-function cargarGastosApi(){
-
-    this.handleEvent = async function cargarGastosApi(){
+async function cargarGastosApi(){
         let usuario = document.getElementById("nombre_usuario").value;
         let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`;
-        let response = await fetch(url);
+        let response = await (await fetch(url)).json;
         
         scriptsGestion.cargarGastos(response);
 
-
         return response;
     
-}
 repintar();
 }
 

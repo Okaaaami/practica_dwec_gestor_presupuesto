@@ -350,9 +350,8 @@ async function cargarGastosApi(){
         
         scriptsGestion.cargarGastos(response);
 
-        return response;
+        repintar();
     
-repintar();
 }
 
 let btnCargarGastosApi = document.getElementById("cargar-gastos-api");

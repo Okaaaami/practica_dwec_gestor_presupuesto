@@ -350,13 +350,13 @@ function cargarGastosApi(){
         let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`;
         let response = await fetch(url);
         
-        scriptsGestion.cargarGastos();
+        scriptsGestion.cargarGastos(response);
 
 
         return response;
     
-        repintar();
 }
+repintar();
 }
 
 let btnCargarGastosApi = document.getElementById("cargar-gastos-api");

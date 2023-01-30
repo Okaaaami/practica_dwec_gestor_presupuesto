@@ -67,7 +67,7 @@ function mostrarGastoWeb(idElemento, gasto){
 
 
     ///////////////////////////////
-    /*
+    
     let BotonborrarApi = document.createElement("button");
     BotonborrarApi.className = "gasto-borrar-api";
     BotonborrarApi.type = "button";
@@ -78,7 +78,7 @@ function mostrarGastoWeb(idElemento, gasto){
     borrarApi.gasto = gasto;
     BotonborrarApi.addEventListener('click', borrarApi);
     divGasto.append(BotonborrarApi);
-    */
+    
 
     ///////////////////////////////
 
@@ -368,17 +368,27 @@ async function cargarGastosApi(){
     
 }
 function borrarGastoApi(){
-    this.handleEvent = async function(event){
-        let usuario = document.getElementById("nombre_usuario").value;
-        let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`;
-        let response = await fetch(url, { method: 'DELETE' }).json;
-
-        cargarGastosApi(response);
+    this.handleEvent = async function(){
+        let usuario = document.getElementById('nombre_usuario').value;
+        
+            let url =  `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.gastoId}`;
+            fetch(url, 
+            {
+                method: "DELETE",
+            })
+            .then(function(response)
+            {
+                if(response.ok)
+                {
+                    cargarGastosApi();
+                }
+                
+            })
     }
 }
 
 function enviarGastoApi(){
-    this.handleEvent = async function(event){
+    this.handleEvent = async function(){
         let usuario = document.getElementById("nombre_usuario").value;
         let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`;
         let response = await fetch(url, { method: 'POST' }).json;

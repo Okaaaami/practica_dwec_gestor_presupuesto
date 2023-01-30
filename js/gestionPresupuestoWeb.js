@@ -67,6 +67,7 @@ function mostrarGastoWeb(idElemento, gasto){
 
 
     ///////////////////////////////
+    /*
     let BotonborrarApi = document.createElement("button");
     BotonborrarApi.className = "gasto-borrar-api";
     BotonborrarApi.type = "button";
@@ -77,7 +78,7 @@ function mostrarGastoWeb(idElemento, gasto){
     borrarApi.gasto = gasto;
     BotonborrarApi.addEventListener('click', borrarApi);
     divGasto.append(BotonborrarApi);
-
+    */
 
     ///////////////////////////////
 
@@ -223,6 +224,11 @@ function nuevoGastoWebFormulario(){
     cancelar.buttonAnyadir = botoncitoAnyadir;
     botonCancelar.addEventListener('click', cancelar);
     //////////
+    let botonEnviarApi = plantillaFormulario.getElementById("gasto-enviar-api");
+    let enviar = new enviarGastoApi();
+    botonEnviarApi.addEventListener("click", enviar)
+    
+
 }
 
 
@@ -355,10 +361,9 @@ function cargarGastosWeb(){
 async function cargarGastosApi(){
         let usuario = document.getElementById("nombre_usuario").value;
         let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`;
-        let response = await (await fetch(url)).json;
+        let response = (await fetch(url)).json();
         
         scriptsGestion.cargarGastos(response);
-
         repintar();
     
 }
@@ -367,6 +372,16 @@ function borrarGastoApi(){
         let usuario = document.getElementById("nombre_usuario").value;
         let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`;
         let response = await fetch(url, { method: 'DELETE' }).json;
+
+        cargarGastosApi(response);
+    }
+}
+
+function enviarGastoApi(){
+    this.handleEvent = async function(event){
+        let usuario = document.getElementById("nombre_usuario").value;
+        let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`;
+        let response = await fetch(url, { method: 'POST' }).json;
 
         cargarGastosApi(response);
     }

@@ -361,9 +361,9 @@ function cargarGastosWeb(){
 async function cargarGastosApi(){
         let usuario = document.getElementById("nombre_usuario").value;
         let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`;
-        let response = (await fetch(url)).json();
-        
-        scriptsGestion.cargarGastos(response);
+        let response = await fetch(url);
+        let response2 = await response.json();
+        scriptsGestion.cargarGastos(response2);
         repintar();
     
 }

@@ -384,7 +384,7 @@ function borrarGastoApi(){
                 }
                 
             })
-    }
+        }
 }
 
 function enviarGastoApi(){

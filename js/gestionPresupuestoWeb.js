@@ -285,6 +285,13 @@ function EditarHandleFormulario(){
         cancel.buttonAnyadir = botoncitoEdit;
         let botonCancelar = formulario.querySelector("button.cancelar");
         botonCancelar.addEventListener('click', cancel);
+
+        let enviar = new editarGastoApi();
+        enviar.formulario = formulario;
+        enviar.gasto = this.gasto;
+        formulario.querySelector("Button[class='gasto-enviar-api']").addEventListener('click',enviar);
+
+
     }
 }
 function enviarEditarHandle(){
@@ -400,6 +407,32 @@ function enviarGastoApi(){
         let response = await fetch(
             `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${document.getElementById("nombre_usuario").value}`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            }, 
+            //
+            body: JSON.stringify(gasto)
+        });
+        
+        if (response.ok) {
+            cargarGastosApi();
+        }
+    }
+}
+function editarGastoApi(){
+    this.handleEvent = async function(){
+        let usuario = document.getElementById('nombre_usuario').value;
+
+        let gasto = {
+            descripcion: this.formulario.descripcion.value,
+            valor: this.formulario.valor.value,
+            fecha: this.formulario.fecha.value,
+            etiquetas: (typeof this.formulario.etiquetas.value !== "undefined") ? this.formulario.etiquetas.value.split(",") : undefined,
+        }
+        //s
+        let response = await fetch(
+            `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.gastoId}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             }, 

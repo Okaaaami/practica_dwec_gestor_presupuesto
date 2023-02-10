@@ -14,6 +14,10 @@ function mostrarGastoWeb(idElemento, gasto){
     let divGasto = document.createElement("div");
     divGasto.className = "gasto"
     //
+    let titulo = document.createElement("h2");
+    titulo.innerHTML ="Filtrado";
+    divGasto.append(titulo);
+    //
     let divGastoDescripcion = document.createElement("div");
     divGastoDescripcion.className = "gasto-descripcion";
     divGastoDescripcion.innerText += gasto.descripcion;
@@ -21,7 +25,7 @@ function mostrarGastoWeb(idElemento, gasto){
     //
     let divGastoFecha = document.createElement("div");
     divGastoFecha.className = "gasto-fecha";
-    divGastoFecha.innerText += gasto.fecha;
+    divGastoFecha.innerText += new Date(gasto.fecha).toLocaleDateString();
     divGasto.append(divGastoFecha);
     //
     let divGastoValor = document.createElement("div");
@@ -109,6 +113,7 @@ function mostrarGastosAgrupadosWeb(idElemento, agroup, periodo){
     let id = document.getElementById(idElemento);
     //////////
     let divAgrupacion = document.createElement("div");
+    divAgrupacion.innerHTML = " ";
     divAgrupacion.className = "agrupacion";
     //////////
     let h1Agrupacion = document.createElement("h1");
@@ -122,7 +127,7 @@ function mostrarGastosAgrupadosWeb(idElemento, agroup, periodo){
         //////////
         let divAgruDatoClave = document.createElement("span");
         divAgruDatoClave.className = "agrupacion-dato-clave";
-        divAgruDatoClave.innerHTML = `${propi}`;
+        divAgruDatoClave.innerHTML = `${propi} `;
         //////////
         let divAgruDatoValor = document.createElement("span");
         divAgruDatoValor.className = "agrupacion-dato-valor";
@@ -132,6 +137,65 @@ function mostrarGastosAgrupadosWeb(idElemento, agroup, periodo){
         divAgruDato.append(divAgruDatoClave);
         divAgruDato.append(divAgruDatoValor);
     }
+    // Estilos
+    divAgrupacion.style.width = "33%";
+    divAgrupacion.style.display = "inline-block";
+    // Crear elemento <canvas> necesario para crear la gráfica
+    // https://www.chartjs.org/docs/latest/getting-started/
+    let chart = document.createElement("canvas");
+    // Variable para indicar a la gráfica el período temporal del eje X
+    // En función de la variable "periodo" se creará la variable "unit" (anyo -> year; mes -> month; dia -> day)
+    let unit = "";
+    switch (periodo) {
+    case "anyo":
+        unit = "year";
+        break;
+    case "mes":
+        unit = "month";
+        break;
+    case "dia":
+    default:
+        unit = "day";
+        break;
+    }
+
+    // Creación de la gráfica
+    // La función "Chart" está disponible porque hemos incluido las etiquetas <script> correspondientes en el fichero HTML
+    const myChart = new Chart(chart.getContext("2d"), {
+        // Tipo de gráfica: barras. Puedes cambiar el tipo si quieres hacer pruebas: https://www.chartjs.org/docs/latest/charts/line.html
+        type: 'bar',
+        data: {
+            datasets: [
+                {
+                    // Título de la gráfica
+                    label: `Gastos por ${periodo}`,
+                    // Color de fondo
+                    backgroundColor: "#555555",
+                    // Datos de la gráfica
+                    // "agrup" contiene los datos a representar. Es uno de los parámetros de la función "mostrarGastosAgrupadosWeb".
+                    data: agroup
+                }
+            ],
+        },
+        options: {
+            scales: {
+                x: {
+                    // El eje X es de tipo temporal
+                    type: 'time',
+                    time: {
+                        // Indicamos la unidad correspondiente en función de si utilizamos días, meses o años
+                        unit: unit
+                    }
+                },
+                y: {
+                    // Para que el eje Y empieza en 0
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    // Añadimos la gráfica a la capa
+    divAgrupacion.append(chart);
     id.append(divAgrupacion);
     return id;
 }
@@ -139,15 +203,28 @@ function mostrarGastosAgrupadosWeb(idElemento, agroup, periodo){
 
 function repintar(){
 
-document.getElementById("presupuesto").innerHTML = "";
-document.getElementById("gastos-totales").innerHTML = "";
-document.getElementById("balance-total").innerHTML = "";
-document.getElementById("listado-gastos-completo").innerHTML = "";
-//////////
-//////////
-mostrarDatoEnId(scriptsGestion.mostrarPresupuesto(),"presupuesto");
-mostrarDatoEnId(scriptsGestion.calcularTotalGastos(),"gastos-totales");
-mostrarDatoEnId(scriptsGestion.calcularBalance(),"balance-total");
+    document.getElementById("presupuesto").innerHTML = "";
+    document.getElementById("gastos-totales").innerHTML = "";
+    document.getElementById("balance-total").innerHTML = "";
+    document.getElementById("listado-gastos-completo").innerHTML = "";
+    //////////
+    //////////
+    mostrarDatoEnId(scriptsGestion.mostrarPresupuesto(),"presupuesto");
+    mostrarDatoEnId(scriptsGestion.calcularTotalGastos(),"gastos-totales");
+    mostrarDatoEnId(scriptsGestion.calcularBalance(),"balance-total");
+
+    let agrupacionDia = scriptsGestion.agruparGastos("dia");
+    document.getElementById("agrupacion-dia").innerHTML=" ";
+    mostrarGastosAgrupadosWeb("agrupacion-dia",agrupacionDia,"día");
+    
+    let agrupacionMes = scriptsGestion.agruparGastos("mes");
+    document.getElementById("agrupacion-mes").innerHTML=" ";
+    mostrarGastosAgrupadosWeb("agrupacion-mes",agrupacionMes,"mes");
+    
+    let agrupacionAnyo = scriptsGestion.agruparGastos("ayno");
+    document.getElementById("agrupacion-anyo").innerHTML=" ";
+    mostrarGastosAgrupadosWeb("agrupacion-anyo",agrupacionAnyo,"anyo");
+
 
     for(let g of scriptsGestion.listarGastos()){
         mostrarGastoWeb("listado-gastos-completo",g);

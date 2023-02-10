@@ -14,9 +14,7 @@ function mostrarGastoWeb(idElemento, gasto){
     let divGasto = document.createElement("div");
     divGasto.className = "gasto"
     //
-    let titulo = document.createElement("h2");
-    titulo.innerHTML ="Filtrado";
-    divGasto.append(titulo);
+
     //
     let divGastoDescripcion = document.createElement("div");
     divGastoDescripcion.className = "gasto-descripcion";
@@ -38,6 +36,7 @@ function mostrarGastoWeb(idElemento, gasto){
 
     let hand3 = new BorrarEtiquetasHandle();
     hand3.gasto = gasto;
+
 
     for(let i = 0; i < gasto.etiquetas.length; i++){
         hand3.etiqueta = gasto.etiquetas[i];
@@ -121,17 +120,17 @@ function mostrarGastosAgrupadosWeb(idElemento, agroup, periodo){
     divAgrupacion.append(h1Agrupacion);
 
 
-    for(let propi of Object.keys(agroup)){
+    for(let propi of Object.entries(agroup)){
         let divAgruDato = document.createElement("div");
         divAgruDato.className += "agrupacion-dato";
         //////////
         let divAgruDatoClave = document.createElement("span");
         divAgruDatoClave.className = "agrupacion-dato-clave";
-        divAgruDatoClave.innerHTML = `${propi} `;
+        divAgruDatoClave.innerHTML = `Fecha ${propi[0]}`;
         //////////
         let divAgruDatoValor = document.createElement("span");
         divAgruDatoValor.className = "agrupacion-dato-valor";
-        divAgruDatoValor.innerHTML = `${propi.valueOf()}`;
+        divAgruDatoValor.innerHTML = `Valor ${propi[1]}`;
         //////////
         divAgrupacion.append(divAgruDato);
         divAgruDato.append(divAgruDatoClave);
@@ -213,22 +212,21 @@ function repintar(){
     mostrarDatoEnId(scriptsGestion.calcularTotalGastos(),"gastos-totales");
     mostrarDatoEnId(scriptsGestion.calcularBalance(),"balance-total");
 
-    let agrupacionDia = scriptsGestion.agruparGastos("dia");
-    document.getElementById("agrupacion-dia").innerHTML=" ";
-    mostrarGastosAgrupadosWeb("agrupacion-dia",agrupacionDia,"día");
-    
-    let agrupacionMes = scriptsGestion.agruparGastos("mes");
-    document.getElementById("agrupacion-mes").innerHTML=" ";
-    mostrarGastosAgrupadosWeb("agrupacion-mes",agrupacionMes,"mes");
-    
-    let agrupacionAnyo = scriptsGestion.agruparGastos("ayno");
-    document.getElementById("agrupacion-anyo").innerHTML=" ";
-    mostrarGastosAgrupadosWeb("agrupacion-anyo",agrupacionAnyo,"anyo");
-
-
     for(let g of scriptsGestion.listarGastos()){
         mostrarGastoWeb("listado-gastos-completo",g);
     }
+
+    let agrupacion = gestionpr.agruparGastos("dia");
+    document.getElementById("agrupacion-dia").innerHTML="";
+    mostrarGastosAgrupadosWeb("agrupacion-dia", agrupacion, "día");
+
+    agrupacion = gestionpr.agruparGastos("mes");
+    document.getElementById("agrupacion-mes").innerHTML = "";
+    mostrarGastosAgrupadosWeb("agrupacion-mes", agrupacion, "mes");
+
+    agrupacion = gestionpr.agruparGastos("anyo");
+    document.getElementById("agrupacion-anyo").innerHTML = "";
+    mostrarGastosAgrupadosWeb("agrupacion-anyo", agrupacion, "año");
 }
 
 function actualizarPresupuestoWeb (){
@@ -350,7 +348,7 @@ function EditarHandleFormulario(){
         //////////
         formulario.elements.descripcion.value = this.gasto.descripcion;
         formulario.elements.valor.value = this.gasto.valor;
-        formulario.elements.fecha.value = this.gasto.fecha;
+        formulario.elements.fecha.value = new Date(this.fecha).toISOString().split('T')[0];
         formulario.elements.etiquetas.value = this.gasto.etiquetas;
         //////////
 
@@ -370,6 +368,7 @@ function EditarHandleFormulario(){
 
 
     }
+
 }
 function enviarEditarHandle(){
     this.handleEvent = function(event){
@@ -444,13 +443,12 @@ function cargarGastosWeb(){
 }
 
 async function cargarGastosApi(){
-        let usuario = document.getElementById("nombre_usuario").value;
-        let url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`;
-        let response = await fetch(url);
-        let response2 = await response.json();
-        scriptsGestion.cargarGastos(response2);
-        repintar();
-    
+
+    let usuario = document.getElementById("nombre_usuario").value;
+    let rePost = await fetch(`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`);
+    let post = await rePost.json();
+    scriptsGestion.cargarGastos(post);
+    repintar();
 }
 function borrarGastoApi(){
     this.handleEvent = async function(){

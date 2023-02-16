@@ -177,33 +177,39 @@ function CrearGasto(descripcion,valor,fecha,...etiqueta) {
         }
     }
     //
+    
     this.obtenerPeriodoAgrupacion = function(periodo){
-        let date = new Date(fecha);
-        if(periodo === `dia`){
-            if((date.getMonth() + 1) > 9){
-                if(date.getDate() > 9){
-                    return `${date.getFullYear()}` + `-` + `${(date.getMonth() + 1)}` + `-` + `${(date.getDate())}`
-                }else{
-                    return `${date.getFullYear()}` + `-` + `${(date.getMonth() + 1)}` + `-` + `0`+`${(date.getDate())}`
-                }
+        let res;
+        let f = new Date(this.fecha);
+        let mes = parseInt(f.getMonth())+ 1;
+        let day;
+
+        if(parseInt(f.getDate()) < 10){
+            day =  `0${parseInt(f.getDate())}`
+        }else{
+            day = parseInt(f.getDate());
+        }
+        if(periodo === "dia"){
+            if(mes < 10){
+                    res = f.getFullYear() + `-0` + mes + `-` + day;
+                
             }else{
-                if(date.getDate() > 9){
-                    return `${date.getFullYear()}` + `-` + `0`+`${(date.getMonth() + 1)}` + `-` +`${(date.getDate())}`
-                }else{
-                    return `${date.getFullYear()}` + `-` + `0`+`${(date.getMonth() + 1)}` + `-` + `0`+`${(date.getDate())}`
-                }
+                res = f.getFullYear() + `-` + mes + `-` + day;
             }
         }
-        if(periodo === `mes`){
-            if((date.getMonth()+1) > 9){
-                return `${date.getFullYear()}` + `-` + `${(date.getMonth() + 1)}`
+
+        if(periodo === "mes"){
+            if(mes < 10){
+                res = f.getFullYear() + `-0` + mes;
             }else{
-                return `${date.getFullYear()}` + `-` + `0`+`${(date.getMonth() + 1)}`
+                res = f.getFullYear() + `-` + mes;
             }
         }
-        if(periodo === `anyo`){
-            return date.getFullYear();
+
+        if(periodo === "anyo"){
+            res = f.getFullYear();
         }
+        return res;
     }
     //
     this.mostrarGasto = function(){
